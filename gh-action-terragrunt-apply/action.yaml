@@ -1,0 +1,39 @@
+name: terragrunt-apply-all
+description: Applay a Terraform plan
+author: Alina Freydina
+
+inputs:
+  path:
+    description: Path to the Terragrunt configuration
+    required: false
+    default: .
+  tg_version:
+    description: Required Terragrunt version
+    required: false
+    default: "0.52.4"
+  tf_version:
+    description: Required Terraform version
+    required: false
+    default: "1.5.7"
+  parallelism:
+    description: Limit the number of concurrent operations
+    required: false
+    default: "0"
+  label:
+    description: A friendly name for this plan
+    required: false
+    default: ""
+  destroy:
+    description: Create a plan to destroy all resources
+    required: false
+    default: "false"
+  auto_approve:
+    description: Automatically approve and apply plans
+    required: false
+    default: "false"
+
+runs:
+  using: docker
+  image: ../image/Dockerfile
+  entrypoint: /entrypoints/tg_apply_all.sh
+

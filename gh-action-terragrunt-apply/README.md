@@ -1,4 +1,4 @@
-# terragrunt-apply-all action
+# gh-action-terragrunt-apply action
 
 This Terragrunt action based on [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 

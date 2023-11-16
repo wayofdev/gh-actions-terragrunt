@@ -1,4 +1,4 @@
-# terragrunt-plan-all action
+# gh-action-terragrunt-plan action
 
 This Terragrunt action based on [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
@@ -168,7 +168,7 @@ A minimal example payload looks like:
 ```json
 {
   "pull_request": {
-    "url": "https://api.github.com/repos/dflook/terraform-github-actions/pulls/1"
+    "url": "https://api.github.com/repos/wayofdev/gh-actions-terragrunt/pulls/1"
   }
 }
 ```

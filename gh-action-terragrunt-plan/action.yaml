@@ -1,4 +1,4 @@
-name: terragrunt-plan-all
+name: gh-action-terragrunt-plan
 description: Create a Terraform plan
 author: Alina Freydina
 

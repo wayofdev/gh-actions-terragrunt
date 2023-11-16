@@ -1,4 +1,4 @@
-name: terragrunt-apply-all
+name: gh-action-terragrunt-apply
 description: Applay a Terraform plan
 author: Alina Freydina
 

@@ -1,6 +1,6 @@
 {
     "name": "gh-actions-terragrunt",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "repository": {
         "url": "https://github.com/wayofdev/gh-actions-terragrunt.git"
     }

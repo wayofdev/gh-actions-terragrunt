@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.1.0...v1.1.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* script permission ([3f1e508](https://github.com/wayofdev/gh-actions-terragrunt/commit/3f1e5081ec3fd7efb199a015e08e1d9a50ec7e59))
+
 ## [1.1.0](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.0.1...v1.1.0) (2023-11-21)
 
 

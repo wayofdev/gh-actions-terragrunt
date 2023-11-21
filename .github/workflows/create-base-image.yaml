@@ -3,11 +3,10 @@ name: 📍 Update base image
 on:
   push:
     branches:
-      - main
-      - dev
+      - master
     paths:
       - image/Dockerfile-base
-      - .github/workflows/base-image.yaml
+      - .github/workflows/create-base-image.yaml
 
 env:
   REGISTRY: "ghcr.io"

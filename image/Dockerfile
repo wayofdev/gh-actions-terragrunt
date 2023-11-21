@@ -29,3 +29,4 @@ COPY tools/compact_plan.py /usr/local/bin/compact_plan
 COPY tools/github_comment_react.py /usr/local/bin/github_comment_react
 
 LABEL org.opencontainers.image.title="GitHub actions for terragrunt"
+LABEL org.opencontainers.image.source https://github.com/wayofdev/gh-actions-terragrunt

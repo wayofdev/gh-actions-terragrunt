@@ -34,5 +34,6 @@ RUN apt-get update  \
 
 COPY --from=tfmask /go/tfmask/release/tfmask /usr/local/bin/tfmask
 ENV TFMASK_RESOURCES_REGEX="(?i)^(random_id|kubernetes_secret|acme_certificate).*$"
+LABEL org.opencontainers.image.source https://github.com/wayofdev/gh-actions-terragrunt
 
 ENTRYPOINT ["/usr/local/bin/terraform"]

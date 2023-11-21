@@ -1,4 +1,4 @@
-name: 📌 Release
+name: 📌 Deploy release
 
 on:
   release:
@@ -44,7 +44,7 @@ jobs:
             --build-arg VERSION="${RELEASE_TAG:1}" \
             --build-arg FROM_REGISTRY=$REGISTRY \
             --build-arg FROM_REPO=${GITHUB_REPOSITORY_OWNER,,} \
-            --build-arg FROM_IMAGE=$REPO_NAME \
+            --build-arg FROM_IMAGE=${REPO_NAME}-base \
             --tag $REGISTRY/${GITHUB_REPOSITORY_OWNER,,}/$REPO_NAME:$RELEASE_TAG \
             --platform linux/amd64,linux/arm64 \
             --attest type=provenance,mode=max,builder-id=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID \

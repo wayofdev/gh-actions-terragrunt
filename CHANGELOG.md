@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.0.0...v1.0.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* base image name ([c6299f1](https://github.com/wayofdev/gh-actions-terragrunt/commit/c6299f124ee2866217657891399bde9a01bd793f))
+
 ## 1.0.0 (2023-11-21)
 
 

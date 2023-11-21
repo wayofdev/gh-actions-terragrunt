@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.0.1...v1.1.0) (2023-11-21)
+
+
+### Features
+
+* add repo label ([49b97a0](https://github.com/wayofdev/gh-actions-terragrunt/commit/49b97a04519d17b45c77f2210d0bb1c124534bfe))
+
 ## [1.0.1](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.0.0...v1.0.1) (2023-11-21)
 
 

@@ -23,7 +23,7 @@ jobs:
           token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           release-type: node
           package-name: gh-actions-teragrunt
-          default-branch: dev
+          default-branch: master
           changelog-types: |
             [
               { "type": "feat", "section": "Features", "hidden": false },

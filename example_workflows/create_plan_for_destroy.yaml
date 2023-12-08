@@ -21,7 +21,7 @@ jobs:
         uses: wayofdev/gh-action-terragrunt-plan@v1
         with:
           path: ingrastructure
-          tg_version: 'v0.52.4'
+          tg_version: '0.52.4'
           tf_version: '1.5.7'
           destroy: true
         env:

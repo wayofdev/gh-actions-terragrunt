@@ -113,8 +113,6 @@ def create_plan_hashes(folder_path: str, salt: str) -> Optional[List[dict]]:
         hash_section['plan_hash'] = plan_hash(file_path.read_text().strip(), salt)
         plan_hashes.append(hash_section)
 
-    print("PRINTING HASHES")
-    print(plan_hashes)
     return plan_hashes
 
 

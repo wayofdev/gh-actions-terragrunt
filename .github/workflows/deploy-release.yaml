@@ -2,8 +2,7 @@ name: 📌 Deploy release
 
 on:
   release:
-    types:
-      - released
+    types: [published]
   workflow_dispatch:
     inputs:
       tag_name:
@@ -20,6 +19,7 @@ jobs:
   image:
     runs-on: ubuntu-latest
     name: Release Actions
+
     steps:
       - name: 📦 Checkout
         uses: actions/checkout@v3

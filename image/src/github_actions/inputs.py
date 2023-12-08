@@ -39,6 +39,7 @@ class Plan(PlanPrInputs):
 class Apply(PlanPrInputs):
     """Input variables for the terraform-apply action"""
     INPUT_AUTO_APPROVE: str
+    INPUT_STRATEGY: str
 
 
 class Check(PlanInputs):

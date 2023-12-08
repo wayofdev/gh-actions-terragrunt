@@ -2,18 +2,20 @@
 
 This Terragrunt action based on [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action applies a Terraform plan for each module in the provided path. The default behaviour is to apply the plan that has been added to a PR using the wayofdev/gh-action-terragrunt-plan action.
+This action applies a Terraform plan for each module in the provided path. The default behaviour is to apply the plan that has been added to a PR using the Fenikks/terragrunt-plan-all action.
 
 If the plan is not found or has changed, then the apply action will fail. This is to ensure that the action only applies changes that have been reviewed by a human.
 
 You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
-**NOTE:** This github action uses default terragrunt cache folder `.terragrunt-cache` to create plan and then to read it. 
-Don't use terragrunt_download setting in your terragrunt code and also don't clear cache. Otherwise the action won't work.
+>**NOTE:**
+>There are two apply strategies. Read about them bellow in Inputs section.
+
+This github action uses --terragrunt-download-dir option to redirect cache in `/tmp/tg_cache_dir`.
 
 ## Inputs
 
-These input values must be the same as any wayofdev/gh-action-terragrunt-plan for the same configuration. (unless auto_approve: true)
+These input values must be the same as any Fenikks/terragrunt-plan-all for the same configuration, except strategy because it is actual only for apply command. (unless auto_approve: true)
 
 * `path`
 
@@ -73,9 +75,19 @@ These input values must be the same as any wayofdev/gh-action-terragrunt-plan fo
 
   The default is false, which requires plans to have been approved through a pull request.
 
-  - Type: bool
+  - Type: boolean
   - Optional
   - Default: false
+
+* `strategy`
+
+  When set to **parallel**(default) `terragrunt run-all apply` will be executed in provided `path`. And terragrunt will execute multiple plans in parallel accordint to parallelism settings. Plan will be applied even if there is no changes for particular module.
+
+  When set to **sequential** terragrunt will change into each module directory individually and execute `terragrunt run-all apply` and only when there are changes in the plan. So it will skip modules without changes and apply changes one by one.
+
+  - Type: string
+  - Optional
+  - Default: parallel
 
 ## Environment Variables
 
@@ -168,7 +180,7 @@ A minimal example payload looks like:
 ```json
 {
   "pull_request": {
-    "url": "https://api.github.com/repos/wayofdev/gh-actions-terragrunt/pulls/1"
+    "url": "https://api.github.com/repos/Fenikks/gh-actions-terragrunt/pulls/1"
   }
 }
 ```

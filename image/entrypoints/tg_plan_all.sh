@@ -20,12 +20,6 @@ start_group "Content of terraform_show_plan.stderr"
 cat >&2 "$STEP_TMP_DIR/terraform_show_plan.stderr"
 end_group
 
-# Check if state is locked  
-if lock-info "$STEP_TMP_DIR/terraform_plan.stderr"; then
-    update_status ":x: Failed to generate plan in $(job_markdown_ref)(State is locked)"
-    exit 1
-fi
-
 if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_comment" || "$GITHUB_EVENT_NAME" == "pull_request_review_comment" || "$GITHUB_EVENT_NAME" == "pull_request_target" || "$GITHUB_EVENT_NAME" == "pull_request_review" || "$GITHUB_EVENT_NAME" == "repository_dispatch" ]]; then
     if [[ "$INPUT_ADD_GITHUB_COMMENT" == "true" || "$INPUT_ADD_GITHUB_COMMENT" == "changes-only" ]]; then
 
@@ -36,17 +30,21 @@ if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "issue_c
             exit 1
         fi
 
-        STATUS=":memo: Plan generated in $(job_markdown_ref)"
+        # Check if state is locked  
+        if lock-info "$STEP_TMP_DIR/terraform_plan.stderr"; then
+            STATUS=":x: Failed to generate plan in $(job_markdown_ref) (State is locked)" github_pr_comment plan
+            exit 1
+        fi
 
         # Checking plan exit codes
         for code in $(tac $STEP_TMP_DIR/terraform_plan.stderr | awk '/^[[:space:]]*\*/{flag=1; print} flag && /^[[:space:]]*time=/{exit}' | awk '{print $5}'); do
             if [[ $code -eq 1 ]]; then
-                STATUS=":x: Failed to generate plan in $(job_markdown_ref)"
+                STATUS=":x: Failed to generate plan in $(job_markdown_ref)" github_pr_comment plan
+                exit 1
             fi
         done
 
-        export STATUS
-        if ! github_pr_comment plan ; then
+        if ! STATUS=":memo: Plan generated in $(job_markdown_ref)" github_pr_comment plan ; then
             exit 1
         fi
     fi

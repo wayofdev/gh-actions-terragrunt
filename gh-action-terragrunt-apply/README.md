@@ -2,7 +2,7 @@
 
 This Terragrunt action based on [dflook/terraform-github-actions](https://github.com/dflook/terraform-github-actions).
 
-This action applies a Terraform plan for each module in the provided path. The default behaviour is to apply the plan that has been added to a PR using the Fenikks/terragrunt-plan-all action.
+This action applies a Terraform plan for each module in the provided path. The default behaviour is to apply the plan that has been added to a PR using the wayofdev/gh-action-terragrunt-plan action.
 
 If the plan is not found or has changed, then the apply action will fail. This is to ensure that the action only applies changes that have been reviewed by a human.
 
@@ -15,7 +15,7 @@ This github action uses --terragrunt-download-dir option to redirect cache in `/
 
 ## Inputs
 
-These input values must be the same as any Fenikks/terragrunt-plan-all for the same configuration, except strategy because it is actual only for apply command. (unless auto_approve: true)
+These input values must be the same as any wayofdev/gh-action-terragrunt-plan for the same configuration, except strategy because it is actual only for apply command. (unless auto_approve: true)
 
 * `path`
 
@@ -180,7 +180,7 @@ A minimal example payload looks like:
 ```json
 {
   "pull_request": {
-    "url": "https://api.github.com/repos/Fenikks/gh-actions-terragrunt/pulls/1"
+    "url": "https://api.github.com/repos/wayofdev/gh-actions-terragrunt/pulls/1"
   }
 }
 ```

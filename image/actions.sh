@@ -80,24 +80,35 @@ function set_common_plan_args() {
 function plan() {
 
     # shellcheck disable=SC2086
-    debug_log terragrunt run-all plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG -out=plan.out '$PLAN_ARGS'  # don't expand PLAN_ARGS
+    debug_log terragrunt run-all plan --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG -out=plan.out '$PLAN_ARGS'  # don't expand PLAN_ARGS
 
-    MODULE_PATHS=$(find $INPUT_PATH -mindepth 2 -name terragrunt.hcl -exec dirname {} \;)
+    # Get a list of all modules in the provided path
+    MODULE_PATHS=$(terragrunt output-module-groups --terragrunt-working-dir $INPUT_PATH|jq -r 'to_entries | .[].value[]')
+    export MODULE_PATHS
+
+    start_group "List of modules found in the provided input path"
+    for p in $MODULE_PATHS; do
+        echo "- ${INPUT_PATH}${p#*${INPUT_PATH#./}}"
+    done
+    end_group
 
     set +e
     # shellcheck disable=SC2086
     start_group "Generating plan"
-    (cd "$INPUT_PATH" && terragrunt run-all plan -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG -out=plan.out $PLAN_ARGS) \
-        2>"$STEP_TMP_DIR/terraform_plan.stderr" \
-        | $TFMASK 
+    (
+        (cd "$INPUT_PATH" && terragrunt run-all plan --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -detailed-exitcode -lock-timeout=300s $PARALLEL_ARG -out=plan.out $PLAN_ARGS) \
+            2>"$STEP_TMP_DIR/terraform_plan.stderr" \
+            | $TFMASK
+        wait
+    )
     end_group
 
+    # Generate text file for each plan
     start_group "Generating plan it text format"
     # shellcheck disable=SC2034
-    for i in $MODULE_PATHS; do 
-        plan_name=${i//.\//}
-        plan_name=${plan_name//\//___}
-        terragrunt show plan.out --terragrunt-working-dir $i -no-color 2>"$STEP_TMP_DIR/terraform_show_plan.stderr" \
+    for i in $MODULE_PATHS; do
+        plan_name=${i//\//___}
+        terragrunt show plan.out --terragrunt-working-dir $i -no-color --terragrunt-download-dir $TG_CACHE_DIR 2>"$STEP_TMP_DIR/terraform_show_plan.stderr" \
             |tee $PLAN_OUT_DIR/$plan_name
     done
     end_group
@@ -105,17 +116,46 @@ function plan() {
 }
 
 function apply() {
-    
+
     # shellcheck disable=SC2086
-    debug_log terragrunt run-all apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS'
+    debug_log terragrunt run-all apply --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS' plan.out
 
     set +e
-    start_group "Applying plan"
+    start_group "Applying plan sequentially"
+    (
+        for i in $MODULE_PATHS; do
+            plan_name=${i//\//___}
+            if grep -q "No changes." $PLAN_OUT_DIR/$plan_name; then
+                echo "There is no changes in the module ${INPUT_PATH}${i#*${INPUT_PATH#./}}, skiping plan apply for it"
+                continue
+            else
+                (cd $i && terragrunt run-all apply --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS plan.out) \
+                    2>"$STEP_TMP_DIR/terraform_apply_error/${plan_name}.stderr" \
+                    | $TFMASK \
+                    | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_apply_stdout/${plan_name}.stdout"
+            fi
+        done
+        wait
+    )
+    end_group
+    set -e
+}
+
+function apply_all() {
+
     # shellcheck disable=SC2086
-    (cd "$INPUT_PATH" && terragrunt run-all apply -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS) \
-        2>"$STEP_TMP_DIR/terraform_apply.stderr" \
-        | $TFMASK \
-        | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_apply.stdout"
+    debug_log terragrunt run-all apply --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG '$PLAN_ARGS' plan.out
+
+    set +e
+    start_group "Applying plan parallel"
+    # shellcheck disable=SC2086
+    (
+        (cd "$INPUT_PATH" && terragrunt run-all apply --terragrunt-download-dir $TG_CACHE_DIR -input=false -no-color -auto-approve -lock-timeout=300s $PARALLEL_ARG $PLAN_ARGS plan.out) \
+            2>"$STEP_TMP_DIR/terraform_apply.stderr" \
+            | $TFMASK \
+            | tee /dev/fd/3 "$STEP_TMP_DIR/terraform_apply.stdout"
+        wait
+    )
     end_group
     set -e
 }
@@ -177,10 +217,13 @@ function fix_owners() {
 # Every file written to disk should use one of these directories
 STEP_TMP_DIR="/tmp"
 PLAN_OUT_DIR="/tmp/plan"
+TG_CACHE_DIR="/tmp/tg_cache_dir"
 JOB_TMP_DIR="$HOME/.gh-actions-terragrunt"
 WORKSPACE_TMP_DIR=".gh-actions-terragrunt/$(random_string)"
-mkdir -p $PLAN_OUT_DIR
-readonly STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR PLAN_OUT_DIR
-export STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR PLAN_OUT_DIR
+mkdir -p $PLAN_OUT_DIR $TG_CACHE_DIR
+mkdir -p $STEP_TMP_DIR/terraform_apply_stdout
+mkdir -p $STEP_TMP_DIR/terraform_apply_error
+readonly STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR PLAN_OUT_DIR TG_CACHE_DIR
+export STEP_TMP_DIR JOB_TMP_DIR WORKSPACE_TMP_DIR PLAN_OUT_DIR TG_CACHE_DIR
 
 trap fix_owners EXIT

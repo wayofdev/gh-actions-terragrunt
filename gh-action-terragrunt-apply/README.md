@@ -8,12 +8,14 @@ If the plan is not found or has changed, then the apply action will fail. This i
 
 You can instead set `auto_approve: true` which will generate a plan and apply it immediately, without looking for a plan attached to a PR.
 
-**NOTE:** This github action uses default terragrunt cache folder `.terragrunt-cache` to create plan and then to read it. 
-Don't use terragrunt_download setting in your terragrunt code and also don't clear cache. Otherwise the action won't work.
+>**NOTE:**
+>There are two apply strategies. Read about them bellow in Inputs section.
+
+This github action uses --terragrunt-download-dir option to redirect cache in `/tmp/tg_cache_dir`.
 
 ## Inputs
 
-These input values must be the same as any wayofdev/gh-action-terragrunt-plan for the same configuration. (unless auto_approve: true)
+These input values must be the same as any wayofdev/gh-action-terragrunt-plan for the same configuration, except strategy because it is actual only for apply command. (unless auto_approve: true)
 
 * `path`
 
@@ -73,9 +75,19 @@ These input values must be the same as any wayofdev/gh-action-terragrunt-plan fo
 
   The default is false, which requires plans to have been approved through a pull request.
 
-  - Type: bool
+  - Type: boolean
   - Optional
   - Default: false
+
+* `strategy`
+
+  When set to **parallel**(default) `terragrunt run-all apply` will be executed in provided `path`. And terragrunt will execute multiple plans in parallel accordint to parallelism settings. Plan will be applied even if there is no changes for particular module.
+
+  When set to **sequential** terragrunt will change into each module directory individually and execute `terragrunt run-all apply` and only when there are changes in the plan. So it will skip modules without changes and apply changes one by one.
+
+  - Type: string
+  - Optional
+  - Default: parallel
 
 ## Environment Variables
 

@@ -31,6 +31,10 @@ inputs:
     description: Automatically approve and apply plans
     required: false
     default: "false"
+  strategy:
+    description: "What strategy to use when applying: parallel or sequential"
+    required: false
+    default: "parallel"
 
 runs:
   using: docker

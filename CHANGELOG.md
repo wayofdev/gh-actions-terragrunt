@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.1.1...v1.2.0) (2023-12-11)
+
+
+### Features
+
+* added apply strategies ([ef1ec95](https://github.com/wayofdev/gh-actions-terragrunt/commit/ef1ec95acc2107114627396ca4af47dcc356035b))
+
+
+### Bug Fixes
+
+* labeler ([a7e43e5](https://github.com/wayofdev/gh-actions-terragrunt/commit/a7e43e5d9fd609cd6c4cdb5c768a1195bf240406))
+* terragrunt version ([ce30b73](https://github.com/wayofdev/gh-actions-terragrunt/commit/ce30b7372047101110d3477f48980a969fc47a2b))
+
 ## [1.1.1](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.1.0...v1.1.1) (2023-11-21)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.2.0...v1.3.0) (2024-01-08)
+
+
+### Features
+
+* added cache folders and variables ([d8de2c6](https://github.com/wayofdev/gh-actions-terragrunt/commit/d8de2c65ebd41f2d2955866e19a08ca118c30ecb))
+
 ## [1.2.0](https://github.com/wayofdev/gh-actions-terragrunt/compare/v1.1.1...v1.2.0) (2023-12-11)
 
 

@@ -75,6 +75,7 @@ function set_common_plan_args() {
         fi
     fi
     export PLAN_ARGS
+    export PARALLEL_ARG
 }
 
 function plan() {
@@ -198,6 +199,10 @@ function fix_owners() {
         chown -R --reference "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/.gh-actions-terragrunt" || true
         debug_cmd ls -la "$GITHUB_WORKSPACE/.gh-actions-terragrunt"
     fi
+    if [[ -d "$GITHUB_WORKSPACE/$INPUT_CACHE_FOLDER" ]]; then
+        chown -R --reference "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/$INPUT_CACHE_FOLDER" || true
+        debug_cmd ls -la "$GITHUB_WORKSPACE/$INPUT_CACHE_FOLDER"
+    fi
 
     debug_cmd ls -la "$HOME"
     if [[ -d "$HOME/.gh-actions-terragrunt" ]]; then
@@ -214,10 +219,25 @@ function fix_owners() {
     fi
 }
 
-# Every file written to disk should use one of these directories
+export TF_IN_AUTOMATION=true
+
+if [[ "$INPUT_CREATE_CACHE_FOLDER_IN_WORKSPACE" == "true" ]]; then
+    CACHE_PATH=${GITHUB_WORKSPACE}
+else
+    CACHE_PATH="/tmp"
+fi
+
+if [[ "$INPUT_USE_TF_PLUGIN_CACHE_FOLDER" == "true" ]]; then
+    TF_PLUGIN_CACHE_DIR="${CACHE_PATH}/${INPUT_CACHE_FOLDER}/${INPUT_TF_PLUGIN_CACHE_FOLDER}"
+    mkdir -p $TF_PLUGIN_CACHE_DIR
+    readonly TF_PLUGIN_CACHE_DIR
+    export TF_PLUGIN_CACHE_DIR
+fi
+
 STEP_TMP_DIR="/tmp"
 PLAN_OUT_DIR="/tmp/plan"
-TG_CACHE_DIR="/tmp/tg_cache_dir"
+TG_CACHE_DIR="${CACHE_PATH}/${INPUT_CACHE_FOLDER}/${INPUT_TG_CACHE_FOLDER}"
+
 JOB_TMP_DIR="$HOME/.gh-actions-terragrunt"
 WORKSPACE_TMP_DIR=".gh-actions-terragrunt/$(random_string)"
 mkdir -p $PLAN_OUT_DIR $TG_CACHE_DIR

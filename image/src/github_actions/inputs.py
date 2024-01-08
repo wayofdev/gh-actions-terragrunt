@@ -10,9 +10,13 @@ from typing import TypedDict
 class InitInputs(TypedDict):
     """Common input variables for actions the need to initialize terraform"""
     INPUT_PATH: str
-    INPUT_WORKSPACE: str
     INPUT_BACKEND_CONFIG: str
     INPUT_BACKEND_CONFIG_FILE: str
+    INPUT_CREATE_CACHE_FOLDER_IN_WORKSPACE: str
+    INPUT_CACHE_FOLDER: str
+    INPUT_USE_TF_PLUGIN_CACHE_FOLDER: str
+    INPUT_TF_PLUGIN_CACHE_FOLDER: str
+    INPUT_TG_CACHE_FOLDER: str
 
 
 class PlanInputs(InitInputs):
